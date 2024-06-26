@@ -3,8 +3,8 @@
 </h1>
 
 <p align="center">
-  <a aria-label="Framework" href="https://nextjs.org">
-    <img alt="" src="https://img.shields.io/badge/Next.js-000000.svg?style=for-the-badge&logo=Next.js&labelColor=000">
+  <a aria-label="Framework" href="https://react.dev">
+    <img alt="" src="https://img.shields.io/badge/react-black?logo=react&style=for-the-badge">
   </a>
   <img alt="" src="https://img.shields.io/github/languages/top/n2duc/jwt-authentication?style=for-the-badge&labelColor=000">
 </p>
