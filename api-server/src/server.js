@@ -1,13 +1,11 @@
 /* eslint-disable no-console */
-// Author: TrungQuanDev: https://youtube.com/@trungquandev
-
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
-import { corsOptions } from '~/config/corsOptions'
+import { corsOptions } from '~/config/cors.config'
+import connectToMongoDB from '~/config/db.config'
 import { APIs_V1 } from '~/routes/v1/'
-import connectToMongoDB from './config/db.config'
 
 dotenv.config()
 

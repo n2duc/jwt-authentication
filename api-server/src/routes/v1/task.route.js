@@ -1,6 +1,6 @@
 import express from 'express'
 import { authMiddleware } from '~/middlewares/authMiddleware'
-import { taskController } from '~/controllers/taskController'
+import { taskController } from '~/controllers/task.controller'
 
 const Router = express.Router()
 

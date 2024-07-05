@@ -34,7 +34,7 @@ const Dashboard = () => {
   useEffect(() => {
     // Fetch user data
     const fetchData = async () => {
-      const res = await axiosInstance.get(`/dashboards/access`)
+      const res = await axiosInstance.get(`/users/info`)
       setUser(res.data)
     }
     fetchData()

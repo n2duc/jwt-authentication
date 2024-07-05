@@ -41,14 +41,10 @@ const Login = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { username, password } = data
-    const res = await axiosInstance.post(`/users/login`, { username, password })
+    const res = await axiosInstance.post(`/auth/login`, { username, password })
     // console.log(res.data)
-    const { id, email: userEmail, username: userName }  = res.data
-    const userInfo = { id, userEmail, userName }
-
-    // TH2: Trường hợp lưu accessToken vào localStorage và muốn thêm vào header của mỗi request
-    // localStorage.setItem("accessToken", res.data.accessToken)
-    // localStorage.setItem("refreshToken", res.data.refreshToken)
+    const { id, isAdmin }  = res.data
+    const userInfo = { id, isAdmin }
 
     localStorage.setItem("userInfo", JSON.stringify(userInfo))
 

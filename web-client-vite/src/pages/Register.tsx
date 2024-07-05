@@ -46,7 +46,7 @@ const Register = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { username, email, password } = data
-    const res = await axiosInstance.post(`/users/register`, { username, email, password })
+    const res = await axiosInstance.post(`/auth/register`, { username, email, password })
     toast.success(res.data?.message)
     navigate("/login")
   }

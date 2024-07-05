@@ -3,12 +3,6 @@ import type { AxiosInstance, AxiosError, AxiosResponse, AxiosRequestHeaders, Int
 import toast from 'react-hot-toast'
 import { handleLogoutAPI, refreshTokenAPI } from '../apis'
 
-interface RefreshTokenResponse {
-  data?: {
-    accessToken: string;
-  }
-}
-
 interface CustomAxiosError extends AxiosError {
   config: AxiosRequestConfig & { headers: AxiosRequestHeaders };
   response?: AxiosResponse;
@@ -49,7 +43,7 @@ const onRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConf
   return config
 }
 
-let refreshTokenPromise: Promise<RefreshTokenResponse | void> | null = null;
+let refreshTokenPromise: Promise<void> | null = null;
 
 const onErrorResponse = async (error: CustomAxiosError) => {
   if (axios.isAxiosError(error)) {
@@ -71,19 +65,11 @@ const onErrorResponse = async (error: CustomAxiosError) => {
     if (error.response?.status === 410 && originalRequest) {
 
       if (!refreshTokenPromise) {
-        // Lấy refreshToken từ localStorage (TH dùng localStorage)
-        const refreshToken = localStorage.getItem('refreshToken')
         // Gọi API refresh token để lấy lại accessToken mới
-        refreshTokenPromise = refreshTokenAPI(refreshToken)
-          .then((res: RefreshTokenResponse) => {
-            // Dùng cho TH dùng localStorage
-            // const { accessToken } = res.data
-            // localStorage.setItem('accessToken', accessToken)
-            // axiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`
-            console.log(res.data)
-
+        refreshTokenPromise = refreshTokenAPI()
+          .then((res) => {
+            console.log(res.data.message)
             // Dùng cho TH Cookie: accessToken đã được update lại trong Cookie rồi (ở phía BE) nên không cần xử lý tác vụ gì cả
-
           })
           .catch((_error: AxiosError) => {
             // Nếu nhận lỗi từ API refreshToken thì logout luôn

@@ -3,9 +3,10 @@ import bcrypt from 'bcryptjs'
 import ms from 'ms'
 import User from '~/models/user.model'
 import { JwtProvider } from '~/providers/JwtProvider'
+// import { redis } from '~/config/redis.config'
 
 const ACCESS_TOKEN_EXPIRED = '1m'
-const REFRESH_TOKEN_EXPIRED = '14d'
+const REFRESH_TOKEN_EXPIRED = '7d'
 
 const register = async (req, res) => {
   try {
@@ -51,21 +52,9 @@ const login = async (req, res) => {
       return
     }
 
-    // if (req.body.email !== MOCK_DATABASE.USER.EMAIL || req.body.password !== MOCK_DATABASE.USER.PASSWORD) {
-    //   res.status(StatusCodes.FORBIDDEN).json({ message: 'Your email or password is incorrect!' })
-    //   return
-    // }
-
-    // Trường hợp nhập đúng thông tin tài khoản, tạo token và trả về cho phía Client
-    // Tạo thông tin payload để đính kèm trong JWT Token bao gồm id và email của user
-    // const userInfo = {
-    //   id: MOCK_DATABASE.USER.ID,
-    //   email: MOCK_DATABASE.USER.EMAIL
-    // }
     const userInfo = {
       id: user._id,
-      email: user.email,
-      username: user.username
+      isAdmin: user.isAdmin
     }
 
     // Tạo ra 2 loại token, accessToken và refreshToken để trả về cho phía FE
@@ -81,6 +70,9 @@ const login = async (req, res) => {
       REFRESH_TOKEN_EXPIRED
     )
 
+    // Lưu refreshToken vào Redis
+    // await redis.set(userInfo.id, refreshToken, 'EX', 604800)
+
     /**
      * Xử lý trường hợp trả về httpOnly Cookie cho phía Client
      * maxAge: thời gian sống của Cookie tính theo mili giây để tối đa 14 ngày. Cái này là thời gian sống của Cookie
@@ -89,20 +81,20 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('14 days')
+      maxAge: ms('5 minutes')
     })
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('14 days')
+      maxAge: ms('7 days')
     })
 
     // Trả về thông tin user và token cho phía Client
     res.status(StatusCodes.OK).json({
       ...userInfo,
-      accessToken,
-      refreshToken
+      refreshToken,
+      accessToken
     })
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
@@ -115,7 +107,10 @@ const logout = async (req, res) => {
     res.clearCookie('accessToken')
     res.clearCookie('refreshToken')
 
-    res.status(StatusCodes.OK).json({ message: 'Logout API success!' })
+    // Xóa trên redis
+    // await redis.del(req.jwtDecoded?.id)
+
+    res.status(StatusCodes.OK).json({ message: 'Logged out successfully!' })
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
   }
@@ -123,46 +118,47 @@ const logout = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   try {
-    // Cách 1: Lấy refreshToken từ request cookies phía client
+    // Lấy refreshToken từ Redis
+    // const refreshTokenRedis = await redis.get(req.jwtDecoded.id) // Chưa lấy được id để get refreshToken
+    // if (!refreshTokenRedis) {
+    //   return res.status(StatusCodes.FORBIDDEN).json({ message: 'Invalid refresh token' })
+    // }
+
     const refreshTokenCookie = req.cookies?.refreshToken
-    // Cách 2: Từ localStorage phía client sẽ truyền vào body khi gọi API
-    // const refreshTokenBody = req.body?.refreshToken
 
     // Verify refreshToken
     const refreshTokenDecoded = await JwtProvider.verifyToken(
       refreshTokenCookie,
-      // refreshTokenBody,
       process.env.REFRESH_TOKEN_SECRET_SIGNATURE
     )
 
     // Tạo userInfo để lưu vào accessToken mới
     const userInfo = {
       id: refreshTokenDecoded.id,
-      email: refreshTokenDecoded.email,
-      username: refreshTokenDecoded.username
+      isAdmin: refreshTokenDecoded.isAdmin
     }
 
-    const accessToken = await JwtProvider.generateToken(
+    const newAccessToken = await JwtProvider.generateToken(
       userInfo,
       process.env.ACCESS_TOKEN_SECRET_SIGNATURE,
       ACCESS_TOKEN_EXPIRED
     )
 
     // Res lại cookie accessToken mới cho trường hợp sử dụng Cookie
-    res.cookie('accessToken', accessToken, {
+    res.cookie('accessToken', newAccessToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('14 days')
+      maxAge: ms('5 minutes')
     })
 
-    res.status(StatusCodes.OK).json({ accessToken })
+    res.status(StatusCodes.OK).json({ message: 'Token refreshed' })
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Refresh token API failed!' })
   }
 }
 
-export const userController = {
+export const authController = {
   register,
   login,
   logout,
