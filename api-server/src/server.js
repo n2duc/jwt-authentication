@@ -34,10 +34,9 @@ const START_SERVER = () => {
 
   const PORT = process.env.PORT || 5000
   const LOCAL_DEV_APP_HOST = 'localhost'
-  const AUTHOR = 'N2Dev'
   app.listen(PORT, LOCAL_DEV_APP_HOST, async () => {
     await connectToMongoDB()
-    console.log(`Local DEV: Hello ${AUTHOR}, Back-end Server is running successfully at Host: ${LOCAL_DEV_APP_HOST} and Port: ${PORT}`)
+    console.log(`Back-end Server is running successfully at Host: ${LOCAL_DEV_APP_HOST} and Port: ${PORT}`)
   })
 }
 

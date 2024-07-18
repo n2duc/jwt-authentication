@@ -1,6 +1,11 @@
 import { Action, ThunkAction } from '@reduxjs/toolkit';
 import { store } from '../store';
 
+export type UpdateUserInfo = {
+  username: string;
+  email: string;
+}
+
 export interface CreateAccountData {
   username: string;
   email: string;
@@ -41,3 +46,20 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export type AppThunk = ThunkAction<void, RootState, null, Action<string>>;
+
+export enum ROLE {
+  Admin = "Admin",
+  User = "User",
+}
+
+export interface AuthType {
+  avatar: {
+    url: string
+    public_id: string
+  }
+  _id?: string;
+  username?: string;
+  email?: string;
+  isAdmin?: boolean;
+  createdAt?: string | Date;
+}

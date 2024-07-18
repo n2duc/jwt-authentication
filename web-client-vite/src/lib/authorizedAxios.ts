@@ -92,7 +92,7 @@ const onErrorResponse = async (error: CustomAxiosError) => {
     }
 
     if (error.response?.status !== 410) {
-      toast.error(`🚨 [API] | Error ${error.response?.data?.message || message}`);
+      toast.error(`${error.response?.data?.message || message}`);
     }
   } else {
     const errorMessage = (error as Error)?.message || 'Unknown error';

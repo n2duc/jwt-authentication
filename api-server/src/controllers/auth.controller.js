@@ -5,7 +5,7 @@ import User from '~/models/user.model'
 import { JwtProvider } from '~/providers/JwtProvider'
 // import { redis } from '~/config/redis.config'
 
-const ACCESS_TOKEN_EXPIRED = '1m'
+const ACCESS_TOKEN_EXPIRED = '10m'
 const REFRESH_TOKEN_EXPIRED = '7d'
 
 const register = async (req, res) => {
@@ -81,7 +81,7 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('5 minutes')
+      maxAge: ms('7 days')
     })
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -149,7 +149,7 @@ const refreshToken = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: ms('5 minutes')
+      maxAge: ms('7 days')
     })
 
     res.status(StatusCodes.OK).json({ message: 'Token refreshed' })

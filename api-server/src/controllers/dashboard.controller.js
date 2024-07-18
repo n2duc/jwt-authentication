@@ -18,7 +18,7 @@ const access = async (req, res) => {
 
 const getListUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password -isAdmin')
+    const users = await User.find().select('-password')
 
     res.status(StatusCodes.OK).json(users)
   } catch (error) {

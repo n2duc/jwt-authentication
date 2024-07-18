@@ -6,12 +6,8 @@ import { Link, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 
 import {
-  Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardFooter
 } from "../components/ui/card"
 
 import {
@@ -25,6 +21,7 @@ import {
 
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
+import CardLayout from "../layouts/CardLayout"
 
 const formSchema = z.object({
   username: z.string().min(5, { message: "Username must be at least 3 characters long." }),
@@ -52,67 +49,59 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <Card className="max-w-lg w-full">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>
-            Enter your information below to register.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-5">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="shadcn" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="shadcn@ui.dev" type="email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter password" type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full">Register</Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter>
-          <p className="text-center text-sm text-gray-500">
-            Already have an account? <Link to="/login" className="text-blue-500">Login</Link>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+    <CardLayout title="Register" description="Enter your information below to register.">
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="shadcn" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="shadcn@ui.dev" type="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter password" type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full">Register</Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter>
+        <p className="text-center text-sm text-gray-500">
+          Already have an account? <Link to="/login" className="text-zinc-900 font-medium hover:underline">Login</Link>
+        </p>
+      </CardFooter>
+    </CardLayout>
   )
 }
 

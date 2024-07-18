@@ -1,21 +1,57 @@
+import axios from "axios"
+import config from "../config"
 import axiosInstance from "../lib/authorizedAxios"
+import { UpdateUserInfo } from "../types"
 
-export const handleLogoutAPI = async () => {
-  // TH1: Trường hợp dùng localStorage > Xóa thông tin user khỏi localStorage phía FE
-    // localStorage.removeItem("accessToken")
-    // localStorage.removeItem("refreshToken")
-    localStorage.removeItem("userInfo") // Ở cả 2 TH đều phải xóa thông tin user khỏi localStorage
+const BASE_ENDPOINT = import.meta.env.VITE_API_URL
 
-    // TH2: Trường hợp dùng HTTP Only Cookie > Gửi request (Gọi API) lên server để xử lý remove Cookies
-    return await axiosInstance.delete('/auth/logout')
+export const getMeAPI = async () => {
+  const res = await axiosInstance.get(config.endpoints.users.me)
+  return res.data
 }
 
-// export const refreshTokenAPI = async (refreshToken:  string | null) => {
-//   // Đây trường hợp dùng localStorage, lấy refreshToken từ localStorage
-//   // TH dùng cookie k cần truyền tham số đầu vào
-//   return await axiosInstance.put<RefreshTokenResponse>('/users/refresh_token', { refreshToken })
-// }
+export const handleLoginAPI = async (username: string, password: string) => {
+  const res = await axiosInstance.post(config.endpoints.auth.login, { username, password })
+  return res.data
+}
+
+export const handleLogoutAPI = async () => {
+    localStorage.removeItem("userInfo")
+    return await axiosInstance.delete(config.endpoints.auth.logout)
+}
 
 export const refreshTokenAPI = async () => {
-  return await axiosInstance.put('/auth/refresh_token')
+  return await axiosInstance.put(config.endpoints.auth.refreshToken)
+}
+
+export const uploadImage = async (formData: FormData) => {
+  const response = await axiosInstance.post(config.endpoints.users.upload, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+
+  return response.data.avatar.url;
+}
+
+
+export const updateUserInfo = async (data: UpdateUserInfo) => {
+  const response = await axiosInstance.put(config.endpoints.users.update, data);
+
+  return response.data;
+}
+
+export const forgotPassword = async (email: string) => {
+  const response = await axiosInstance.get(config.endpoints.users.forgotPassword, { params: { email } })
+  return response.data
+}
+
+export const resetPassword = async (password: string, userId: string, token: string) => {
+  const response = await axios.put(`${BASE_ENDPOINT}${config.endpoints.users.resetPassword(userId, token)}`, { password })
+  return response
+}
+
+export const getListUsers = async () => {
+  const response = await axiosInstance.get(config.endpoints.admin.getUsers)
+  return response.data
 }

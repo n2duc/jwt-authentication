@@ -12,12 +12,13 @@ import {
   FormItem,
   FormMessage,
 } from "../components/ui/form"
-import { Input } from "../components/ui/input";
+import { Input } from "../components/ui/input"
 import TaskSkeleton from "./TaskSkeleton";
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import toast from "react-hot-toast"
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -58,6 +59,7 @@ const TasksList = ({ className }: { className: string }) => {
     form.reset();
     const response = await axiosInstance.get(`/tasks`)
     setTasks(response.data);
+    toast.success("Task added successfully")
   }
 
   return (
@@ -85,7 +87,7 @@ const TasksList = ({ className }: { className: string }) => {
           <div className="px-4 py-2 rounded-sm border border-slate-300 shadow-sm text-sm font-medium">No tasks</div>
         ) : (
           tasks.map((task: Task) => (
-            <Task key={task._id} task={task} />
+            <TaskItem key={task._id} task={task} />
           ))
         )}
       </ul>
@@ -93,7 +95,7 @@ const TasksList = ({ className }: { className: string }) => {
   );
 };
 
-const Task = ({ task }: { task: Task }) => {
+const TaskItem = ({ task }: { task: Task }) => {
   const [completed, setCompleted] = useState(task.completed);
   
   const handleCheckTask = async (taskId: string) => {
@@ -111,7 +113,7 @@ const Task = ({ task }: { task: Task }) => {
         "flex items-center justify-between"
       )}
     >
-      <AlertTitle>{task.title}</AlertTitle>
+      <AlertTitle className="mb-0">{task.title}</AlertTitle>
       <Switch checked={completed} onCheckedChange={() => handleCheckTask(task._id)} />
     </Alert>
   )
