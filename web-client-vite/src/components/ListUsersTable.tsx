@@ -28,9 +28,12 @@ import {
 } from "./ui/dropdown-menu";
 
 import { MoreHorizontal } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getListUsers } from "../apis";
 import { AuthType } from "../types";
+import PaginationBar from "./PaginationBar";
+
+const PAGE_SIZE = 10
 
 const ListUsersTable = () => {
   const [users, setUsers] = useState<AuthType[]>([]);
@@ -42,6 +45,14 @@ const ListUsersTable = () => {
     };
     fetchUsers();
   }, [])
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
+    const lastPageIndex = firstPageIndex + PAGE_SIZE;
+    return users.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, users]);
 
   if (users.length === 0) {
     return <div>Loading...</div>
@@ -72,7 +83,7 @@ const ListUsersTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
+            {currentTableData.map((user) => (
               <TableRow key={user._id}>
                 <TableCell className="hidden sm:table-cell">
                   <img
@@ -118,6 +129,12 @@ const ListUsersTable = () => {
             ))}
           </TableBody>
         </Table>
+        <PaginationBar
+          currentPage={currentPage}
+          totalCount={users.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={page => setCurrentPage(page)}
+        />
       </CardContent>
       <CardFooter>
         <div className="text-xs text-muted-foreground">
