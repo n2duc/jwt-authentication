@@ -57,3 +57,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.rc-tiptap-editor .ProseMirror {
+  max-height: 600px;
+  overflow: overlay;
+}

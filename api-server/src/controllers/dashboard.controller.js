@@ -18,9 +18,17 @@ const access = async (req, res) => {
 
 const getListUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password')
+    const { page = 1, limit = 10, username = '' } = req.query
+    const skip = (page - 1) * limit
+    const query = username ? { username: { $regex: username, $options: 'i' } } : {}
+    const users = await User.find(query).select('-password').limit(limit * 1).skip(skip).exec()
 
-    res.status(StatusCodes.OK).json(users)
+    const totalUsers = await User.countDocuments(query)
+    const totalPages = Math.ceil(totalUsers / limit)
+
+    const response = { users, totalPages, currentPage: page }
+
+    res.status(StatusCodes.OK).json(response)
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
   }

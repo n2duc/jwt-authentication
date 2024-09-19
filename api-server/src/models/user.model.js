@@ -35,6 +35,19 @@ const userSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false
+  },
+  login_incorrect_count: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  is_locked: {
+    type: Boolean,
+    default: false
+  },
+  lock_end_date: {
+    type: Date,
+    default: null
   }
 }, { timestamps: true })
 

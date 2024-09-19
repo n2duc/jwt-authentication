@@ -27,49 +27,51 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip"
+
 import { MoreHorizontal } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { getListUsers } from "../apis";
-import { AuthType } from "../types";
+import { useMemo, useState } from "react";
+import { AuthType, DataUserRespone } from "../types";
 import PaginationBar from "./PaginationBar";
 
 const PAGE_SIZE = 10
 
-const ListUsersTable = () => {
-  const [users, setUsers] = useState<AuthType[]>([]);
+const ListUsersTable = ({ data }: { data: DataUserRespone }) => {
+  const { users, currentPage, totalPages } = data
+  // const [currentPage, setCurrentPage] = useState(1)
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await getListUsers();
-      setUsers(data);
-    };
-    fetchUsers();
-  }, [])
+  // const currentTableData = useMemo(() => {
+  //   const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
+  //   const lastPageIndex = firstPageIndex + PAGE_SIZE;
+  //   return users.slice(firstPageIndex, lastPageIndex);
+  // }, [currentPage, users]);
 
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
-    const lastPageIndex = firstPageIndex + PAGE_SIZE;
-    return users.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, users]);
-
-  if (users.length === 0) {
-    return <div>Loading...</div>
-  }
+  const firstItemIndex = (currentPage - 1) * PAGE_SIZE + 1;
+  const lastItemIndex = Math.min(currentPage * PAGE_SIZE, users.length)
 
   return (
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
         <CardTitle>Users Management</CardTitle>
         <CardDescription>
-          Manage your products and view their sales performance.
+          Manage accounts and view their infomations.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>
+                No.
+              </TableHead>
+              <TableHead>
+                ID
+              </TableHead>
               <TableHead className="hidden w-[100px] sm:table-cell">
                 <span className="sr-only">Image</span>
               </TableHead>
@@ -83,8 +85,23 @@ const ListUsersTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentTableData.map((user) => (
+            {users.map((user) => (
               <TableRow key={user._id}>
+                <TableCell className="font-medium">
+                  {users.indexOf(user) + 1}
+                </TableCell>
+                <TableCell className="font-medium">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p>{`${user._id?.slice(0, -4)}****`}</p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{user._id}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </TableCell>
                 <TableCell className="hidden sm:table-cell">
                   <img
                     alt="Product image"
@@ -129,17 +146,17 @@ const ListUsersTable = () => {
             ))}
           </TableBody>
         </Table>
+      </CardContent>
+      <CardFooter className="flex items-center">
+        <div className="text-xs text-muted-foreground flex-1">
+          Showing <strong>{firstItemIndex}-{lastItemIndex}</strong> of <strong>{users.length}</strong> products
+        </div>
         <PaginationBar
           currentPage={currentPage}
           totalCount={users.length}
           pageSize={PAGE_SIZE}
           onPageChange={page => setCurrentPage(page)}
         />
-      </CardContent>
-      <CardFooter>
-        <div className="text-xs text-muted-foreground">
-          Showing <strong>1-10</strong> of <strong>32</strong> products
-        </div>
       </CardFooter>
     </Card>
   );

@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { LogOut, RocketIcon } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 
 import {
   Card,
@@ -44,60 +45,67 @@ const HomePage = () => {
   }
 
   return (
-    <div className="p-5 w-full flex flex-col md:flex-row gap-4">
-      <div className="w-full flex-[2]">
-        <Card className="w-full">
-          <CardHeader className="flex-row justify-between">
-            <div className="flex flex-col items-start gap-2">
-              <CardTitle>Home Page</CardTitle>
-              <CardDescription>Bạn đã đăng nhập thành công.</CardDescription>
-            </div>
-            <Avatar>
-              <AvatarImage src={auth?.avatar.url} />
-              <AvatarFallback>
-                <Skeleton className="h-full w-full" />
-              </AvatarFallback>
-            </Avatar>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-              <span className="flex h-2 w-2 translate-y-1 rounded-full bg-green-500" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {auth?.username}
-                </p>
+    <>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta name="description" content="Home Page" />
+        <title>Home Page</title>
+      </Helmet>
+      <div className="p-5 w-full flex flex-col md:flex-row gap-4">
+        <div className="w-full flex-[2]">
+          <Card className="w-full">
+            <CardHeader className="flex-row justify-between">
+              <div className="flex flex-col items-start gap-2">
+                <CardTitle>Home Page</CardTitle>
+                <CardDescription>Bạn đã đăng nhập thành công.</CardDescription>
               </div>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" /> Logout
-            </Button>
-          </CardFooter>
-        </Card>
-        <Alert className="w-full mt-3">
-          <RocketIcon className="h-4 w-4" />
-          <AlertTitle>Bạn đã đăng nhập thành công!</AlertTitle>
-          <AlertDescription>
-            Your email: <span className="text-emerald-500 font-medium">{auth?.email}</span>
-          </AlertDescription>
-          <UpdateProfile dataUser={auth} />
-        </Alert>
-        {auth.isAdmin && (
+              <Avatar>
+                <AvatarImage src={auth?.avatar.url} />
+                <AvatarFallback>
+                  <Skeleton className="h-full w-full" />
+                </AvatarFallback>
+              </Avatar>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+                <span className="flex h-2 w-2 translate-y-1 rounded-full bg-green-500" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {auth?.username}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" /> Logout
+              </Button>
+            </CardFooter>
+          </Card>
           <Alert className="w-full mt-3">
             <RocketIcon className="h-4 w-4" />
-            <AlertTitle>Bạn là Admin!</AlertTitle>
+            <AlertTitle>Bạn đã đăng nhập thành công!</AlertTitle>
             <AlertDescription>
-              Bạn có thể thực hiện các thao tác quản trị viên.
+              Your email: <span className="text-emerald-500 font-medium">{auth?.email}</span>
             </AlertDescription>
-            <Button className="mt-3">
-              <Link to="/dashboard" className="text-emerald-500 font-medium">Truy cập trang quản trị viên</Link>
-            </Button>
+            <UpdateProfile dataUser={auth} />
           </Alert>
-        )}
+          {auth.isAdmin && (
+            <Alert className="w-full mt-3">
+              <RocketIcon className="h-4 w-4" />
+              <AlertTitle>Bạn là Admin!</AlertTitle>
+              <AlertDescription>
+                Bạn có thể thực hiện các thao tác quản trị viên.
+              </AlertDescription>
+              <Button className="mt-3">
+                <Link to="/dashboard" className="text-emerald-500 font-medium">Truy cập trang quản trị viên</Link>
+              </Button>
+            </Alert>
+          )}
+        </div>
+        <TasksList className="w-full flex-1"/>
       </div>
-      <TasksList className="w-full flex-1"/>
-    </div>
+    </>
   )
 }
 

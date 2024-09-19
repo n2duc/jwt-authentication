@@ -1,30 +1,29 @@
-import { Helmet } from 'react-helmet-async';
-import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { Helmet } from 'react-helmet-async'
+import { useQuery } from '@tanstack/react-query'; 
 
-import { handleLogoutAPI } from "../apis";
+import { getListUsers } from "../apis";
 
-import { Button } from "../components/ui/button";
 import ListUsersTable from "../components/ListUsersTable";
+import LogoutButton from '../components/LogoutButton';
+import UserListFilters from '../components/UserListFilters';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    await handleLogoutAPI();
-    // Điều huống về trang Login khi Logout
-    navigate("/login");
-  };
+  const { data, isFetching } = useQuery({
+    queryKey: ['users'],
+    queryFn: getListUsers
+  })
   return (
-    <div>
+    <div className="p-4">
       <Helmet>
         <title>Admin Page</title>
         <meta name="description" content="Admin Dashboard" />
       </Helmet>
-      <h1>Admin Page</h1>
-      <Button className="w-full" onClick={handleLogout}>
-        <LogOut className="mr-2 h-4 w-4" /> Logout
-      </Button>
-      <ListUsersTable />
+      <div className="flex items-center justify-between mb-3">
+        <UserListFilters />
+        <LogoutButton />
+      </div>
+      {data && <ListUsersTable data={data} />}
+      {isFetching && <p>Loading...</p>}
     </div>
   );
 };

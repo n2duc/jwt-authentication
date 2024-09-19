@@ -2,6 +2,7 @@ import axios from "axios"
 import config from "../config"
 import axiosInstance from "../lib/authorizedAxios"
 import { UpdateUserInfo } from "../types"
+import type { ChatMessage } from "../types"
 
 const BASE_ENDPOINT = import.meta.env.VITE_API_URL
 
@@ -53,5 +54,10 @@ export const resetPassword = async (password: string, userId: string, token: str
 
 export const getListUsers = async () => {
   const response = await axiosInstance.get(config.endpoints.admin.getUsers)
+  return response.data
+}
+
+export const generateChat = async (prompt: string, history: ChatMessage[]) => {
+  const response = await axiosInstance.post(config.endpoints.users.chat, { prompt, history })
   return response.data
 }

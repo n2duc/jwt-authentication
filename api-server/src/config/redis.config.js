@@ -1,11 +1,7 @@
 import Redis from 'ioredis'
+import dotenv from 'dotenv'
+dotenv.config()
 
-// const getRedisUrl = () => {
-//   if (process.env.REDIS_URL) {
-//     return process.env.REDIS_URL
-//   }
+const redisClient = new Redis(process.env.REDIS_URL)
 
-//   throw new Error('REDIS_URL is not defined')
-// }
-
-export const redis = new Redis('rediss://default:AdsFAAIncDEwOTg1NzUxMzRhZTE0MTU2OTcxZjlkZDc4ZjMxZTJkNnAxNTYwNjk@lucky-wildcat-56069.upstash.io:6379')
+export default redisClient

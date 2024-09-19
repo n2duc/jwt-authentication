@@ -12,6 +12,7 @@ const config = {
       update: '/users/update',
       forgotPassword: '/users/forgot_password',
       resetPassword: (userId: string, token: string) => `/users/reset_password?userId=${userId}&token=${token}`,
+      chat: '/ai/generate'
     },
     tasks: {
       getTasks: '/tasks',

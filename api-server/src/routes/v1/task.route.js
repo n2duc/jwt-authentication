@@ -6,8 +6,6 @@ const Router = express.Router()
 
 Router.route('/')
   .get(authMiddleware.isAuthorized, taskController.getTasks)
-
-Router.route('/')
   .post(authMiddleware.isAuthorized, taskController.addTask)
 
 Router.route('/:id')

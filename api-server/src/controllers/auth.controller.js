@@ -5,7 +5,7 @@ import User from '~/models/user.model'
 import { JwtProvider } from '~/providers/JwtProvider'
 // import { redis } from '~/config/redis.config'
 
-const ACCESS_TOKEN_EXPIRED = '10m'
+const ACCESS_TOKEN_EXPIRED = '30m'
 const REFRESH_TOKEN_EXPIRED = '7d'
 
 const register = async (req, res) => {
@@ -41,16 +41,51 @@ const register = async (req, res) => {
   }
 }
 
+const MAX_LOGIN_ATTEMPTS = 5
+const LOCK_DURATION = 5 * 60 * 1000 // 1 phút
+
 const login = async (req, res) => {
   try {
     const { username, password } = req.body
     const user = await User.findOne({ username })
     const isPasswordCorrect = await bcrypt.compare(password, user?.password || '')
 
-    if (!user || !isPasswordCorrect) {
-      res.status(StatusCodes.FORBIDDEN).json({ message: 'Your username or password is incorrect!' })
-      return
+    if (!user) {
+      return res.status(StatusCodes.FORBIDDEN).json({ message: 'Your username not found!' })
     }
+
+    if (user.is_locked && user.lock_end_date > new Date()) {
+      const remainingTime = Math.ceil((user.lock_end_date - new Date()) / 1000)
+      return res.status(StatusCodes.FORBIDDEN).json({
+        message: 'Your account is locked!',
+        lockDuration: remainingTime
+      })
+    }
+
+    if (!isPasswordCorrect) {
+      user.login_incorrect_count += 1
+
+      if (user.login_incorrect_count >= MAX_LOGIN_ATTEMPTS) {
+        user.is_locked = true
+        user.lock_end_date = new Date(Date.now() + LOCK_DURATION)
+        await user.save()
+        return res.status(StatusCodes.FORBIDDEN).json({
+          message: 'Your account is locked!',
+          lockDuration: LOCK_DURATION / 1000
+        })
+      }
+
+      await user.save()
+      return res.status(StatusCodes.FORBIDDEN).json({
+        message: 'Your password is incorrect!',
+        attemptsLeft: MAX_LOGIN_ATTEMPTS - user.login_incorrect_count
+      })
+    }
+
+    user.login_incorrect_count = 0
+    user.is_locked = false
+    user.lock_end_date = null
+    await user.save()
 
     const userInfo = {
       id: user._id,
@@ -106,9 +141,6 @@ const logout = async (req, res) => {
     // Xóa Cookie
     res.clearCookie('accessToken')
     res.clearCookie('refreshToken')
-
-    // Xóa trên redis
-    // await redis.del(req.jwtDecoded?.id)
 
     res.status(StatusCodes.OK).json({ message: 'Logged out successfully!' })
   } catch (error) {

@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
+import helmet from 'helmet'
 import { corsOptions } from '~/config/cors.config'
 import connectToMongoDB from '~/config/db.config'
 import { APIs_V1 } from '~/routes/v1/'
@@ -19,11 +20,12 @@ const START_SERVER = () => {
     next()
   })
 
+  app.use(helmet())
+
   // Use Cookie
   // TH1: Dùng cookie để lưu trữ accessToken và refreshToken
   app.use(cookieParser())
 
-  // Allow CORS: for more info, check here: https://youtu.be/iYgAWJ2Djkw
   app.use(cors(corsOptions))
 
   // Enable req.body json data
@@ -36,7 +38,8 @@ const START_SERVER = () => {
   const LOCAL_DEV_APP_HOST = 'localhost'
   app.listen(PORT, LOCAL_DEV_APP_HOST, async () => {
     await connectToMongoDB()
-    console.log(`Back-end Server is running successfully at Host: ${LOCAL_DEV_APP_HOST} and Port: ${PORT}`)
+    console.log('Back-end Server is running')
+    console.log(`Host: ${LOCAL_DEV_APP_HOST}:${PORT}`)
   })
 }
 

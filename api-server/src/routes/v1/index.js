@@ -4,6 +4,8 @@ import { userRoute } from '~/routes/v1/user.route'
 import { dashboardRoute } from '~/routes/v1/dashboard.route'
 import { authRoute } from '~/routes/v1/auth.route'
 import { taskRoute } from './task.route'
+import { geminiRoute } from './gemini.route'
+import { articleRoute } from './article.route'
 
 const Router = express.Router()
 
@@ -22,5 +24,10 @@ Router.use('/dashboards', dashboardRoute)
 
 /** Task APIs */
 Router.use('/tasks', taskRoute)
+
+/** Gemini APIs */
+Router.use('/ai', geminiRoute)
+
+Router.use('/articles', articleRoute)
 
 export const APIs_V1 = Router

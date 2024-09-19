@@ -63,3 +63,19 @@ export interface AuthType {
   isAdmin?: boolean;
   createdAt?: string | Date;
 }
+
+export type DataUserRespone = {
+  users: AuthType[];
+  totalPages: number;
+  currentPage: number;
+}
+
+export type ChatMessage = {
+  role: "user" | "model";
+  parts: { text: string }[];
+};
+
+export type UserFilters = {
+  search?: string;
+  role?: 'admin' | 'user';
+}

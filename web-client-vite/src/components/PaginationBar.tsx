@@ -8,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "./ui/pagination"
+} from "./ui/pagination";
 
 interface PaginationProps {
   onPageChange: (page: number) => void;
@@ -29,7 +29,7 @@ const PaginationBar = ({
     currentPage,
     totalCount,
     siblingCount,
-    pageSize
+    pageSize,
   });
 
   if (currentPage === 0 || (paginationRange?.length ?? 0) < 2) {
@@ -44,42 +44,50 @@ const PaginationBar = ({
     onPageChange(currentPage - 1);
   };
 
-  const lastPage = paginationRange && paginationRange[paginationRange.length - 1] as number;
+  const lastPage =
+    paginationRange && (paginationRange[paginationRange.length - 1] as number);
 
   return (
-    <Pagination>
+    <Pagination className="flex-[5]">
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious onClick={onPrevious} size='md' />
+          <PaginationPrevious
+            onClick={onPrevious}
+            size="default"
+            disabled={currentPage === 1}
+          />
         </PaginationItem>
-        {paginationRange?.map((pageNumber) => {
+        {paginationRange?.map((pageNumber, index) => {
           if (pageNumber === DOTS) {
             return (
-              <PaginationItem key={pageNumber}>
+              <PaginationItem key={`dots-${index}`}>
                 <PaginationEllipsis />
               </PaginationItem>
-            )
+            );
           }
 
           return (
-            <PaginationItem>
+            <PaginationItem key={`page-${pageNumber}`}>
               <PaginationLink
                 onClick={() => onPageChange(Number(pageNumber))}
-                size={"md"}
-                key={pageNumber}
                 isActive={pageNumber === currentPage}
+                size="default"
               >
                 {pageNumber}
               </PaginationLink>
             </PaginationItem>
-          )
+          );
         })}
         <PaginationItem>
-          <PaginationNext onClick={onNext} size='md' />
+          <PaginationNext
+            onClick={onNext}
+            size="default"
+            disabled={currentPage === lastPage}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
-  )
-}
+  );
+};
 
-export default PaginationBar
+export default PaginationBar;

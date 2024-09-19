@@ -2,6 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Link, useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+
+import { loginUser } from "../store/auth/auth.action"
 
 import {
   CardContent,
@@ -17,9 +20,10 @@ import {
 } from "../components/ui/form"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
-import { handleLoginAPI } from "../apis"
+// import { handleLoginAPI } from "../apis"
 import CardLayout from "../layouts/CardLayout"
 import { PasswordInput } from "../components/ui/password-input"
+import { AppDispatch } from "../types"
 
 const formSchema = z.object({
   username: z.string().min(5, { message: "Username must be at least 3 characters long." }),
@@ -28,6 +32,7 @@ const formSchema = z.object({
 
 const Login = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,13 +44,11 @@ const Login = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { username, password } = data
-    const res = await handleLoginAPI(username, password)
-    const userInfo = { id: res.id, isAdmin: res.isAdmin }
-
-    localStorage.setItem("userInfo", JSON.stringify(userInfo))
-
-    // Điều hướng tới trang Dashboard thì Login thành công
-    navigate("/")
+    const resultAction = await dispatch(loginUser({ username, password }))
+    
+    if (loginUser.fulfilled.match(resultAction)) {
+      navigate("/")
+    }
   }
 
   return (

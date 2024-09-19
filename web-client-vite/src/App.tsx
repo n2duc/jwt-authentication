@@ -8,6 +8,7 @@ import ResetPassword from './pages/ResetPassword'
 import AuthenLayout from './layouts/AuthenLayout'
 import AccessDenied from './pages/AccessDenied'
 import AuthProvider from './contexts/AuthContext'
+import ChatGemini from './pages/ChatGemini'
 
 const ProtectedRoute = () => {
   const user = JSON.parse(localStorage.getItem('userInfo') as string)
@@ -39,10 +40,6 @@ const ProtectedRouteAdmin = () => {
 const App = () => {
   return (
     <Routes>
-      {/* <Route path='/' element={
-        <Navigate to="/login" replace />
-      } /> */}
-
       <Route element={<UnauthorizedRoute />}>
         <Route element={<AuthenLayout />}>
           <Route path='/login' element={<Login />} />
@@ -54,6 +51,7 @@ const App = () => {
 
       <Route element={<ProtectedRoute />}>
         <Route path='/' element={<HomePage />} />
+        <Route path='/chat' element={<ChatGemini />} />
         <Route element={<ProtectedRouteAdmin />}>
           <Route path='/dashboard' element={<Dashboard />} />
         </Route>

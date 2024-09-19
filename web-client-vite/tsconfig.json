@@ -2,13 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@apis/*": ["./src/apis/*"],
-      "@lib/*": ["./src/lib/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@types/*": ["./src/types/*"],
-    },
+        "@/*": [
+          "./src/*"
+        ]
+      },
   },
   "files": [],
   "references": [
